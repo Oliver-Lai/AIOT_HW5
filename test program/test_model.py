@@ -7,7 +7,7 @@ os.environ['TRANSFORMERS_CACHE'] = './model_cache'
 
 from transformers import pipeline
 
-MODEL_NAME = "Hello-SimpleAI/chatgpt-detector-roberta"
+MODEL_NAME = "openai-community/roberta-base-openai-detector"
 
 print("🔄 Loading model...")
 classifier = pipeline(

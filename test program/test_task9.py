@@ -73,7 +73,7 @@ def load_classifier():
     try:
         classifier = pipeline(
             task="text-classification",
-            model="Hello-SimpleAI/chatgpt-detector-roberta",
+            model="openai-community/roberta-base-openai-detector",
             device=-1
         )
         return classifier

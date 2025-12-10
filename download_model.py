@@ -12,7 +12,7 @@ from transformers import pipeline
 import os
 
 # Configuration
-MODEL_NAME = "Hello-SimpleAI/chatgpt-detector-roberta"
+MODEL_NAME = "openai-community/roberta-base-openai-detector"
 TASK = "text-classification"
 MODEL_CACHE_DIR = "./model_cache"
 

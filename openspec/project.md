@@ -8,7 +8,7 @@ AIOT_HW5 is an AI vs Human Text Detector web application that helps users identi
 - Streamlit (web application framework)
 - Hugging Face Transformers (ML model integration)
 - PyTorch (ML backend)
-- Hello-SimpleAI/chatgpt-detector-roberta (pre-trained detection model)
+- openai-community/roberta-base-openai-detector (pre-trained detection model)
 
 ## Project Conventions
 

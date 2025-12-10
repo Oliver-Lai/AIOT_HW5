@@ -147,7 +147,7 @@ torch>=2.0.0,<3.0.0
 ```
 
 ### Model Configuration
-- **Model**: Hello-SimpleAI/chatgpt-detector-roberta
+- **Model**: openai-community/roberta-base-openai-detector
 - **Cache Directory**: ./model_cache
 - **Device**: CPU (-1)
 - **Cache Size**: 2 items (~500MB)
@@ -175,7 +175,7 @@ torch>=2.0.0,<3.0.0
 ## Known Considerations
 
 ### Model Behavior
-- The model (`Hello-SimpleAI/chatgpt-detector-roberta`) tends to classify most text as "Human"
+- The model (`openai-community/roberta-base-openai-detector`) is trained by OpenAI to detect GPT-2 text
 - This is expected behavior for this particular model version
 - Application functionality remains correct regardless of prediction accuracy
 - Tests verify that classification completes successfully, not prediction accuracy

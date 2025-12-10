@@ -56,7 +56,7 @@
    - Installing torch (CPU version)
 
 3. **First Model Download** (5-10 minutes)
-   - Downloading Hello-SimpleAI/chatgpt-detector-roberta (~500MB)
+   - Downloading openai-community/roberta-base-openai-detector (~500MB)
    - Model will be cached by Streamlit Cloud
    - Subsequent deployments will be much faster (<1 minute)
 

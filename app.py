@@ -28,8 +28,8 @@ MAX_CHAR_LIMIT = 5000      # Maximum characters accepted from user input
                            # Prevents excessive memory usage and processing time
 
 # Model configuration
-MODEL_NAME = "Hello-SimpleAI/chatgpt-detector-roberta"  # HuggingFace model identifier
-TASK = "text-classification"                             # Pipeline task type
+MODEL_NAME = "openai-community/roberta-base-openai-detector"  # HuggingFace model identifier
+TASK = "text-classification"                                    # Pipeline task type
 DEVICE = -1                                              # -1 for CPU, 0+ for GPU device ID
 MODEL_CACHE_DIR = "./model_cache"                       # Local directory for model caching
                                                           # Reduces download time on subsequent runs
@@ -123,7 +123,8 @@ def analyze_text(text: str, classifier) -> Dict[str, Any]:
         ai_prob = 0.0
         human_prob = 0.0
         
-        # results format: [[{'label': 'Human', 'score': 0.06}, {'label': 'ChatGPT', 'score': 0.94}]]
+        # results format: [[{'label': 'Real', 'score': 0.12}, {'label': 'Fake', 'score': 0.88}]]
+        # Note: openai-community/roberta-base-openai-detector uses 'Fake' for AI-generated, 'Real' for human
         if isinstance(results, list) and len(results) > 0:
             scores = results[0] if isinstance(results[0], list) else results
             
@@ -132,11 +133,11 @@ def analyze_text(text: str, classifier) -> Dict[str, Any]:
                     label = item.get('label', '').strip()
                     score = item.get('score', 0.0)
                     
-                    # ChatGPT label means AI-generated
-                    if label == 'ChatGPT':
+                    # 'Fake' label means AI-generated
+                    if label == 'Fake':
                         ai_prob = score * 100
-                    # Human label means human-written
-                    elif label == 'Human':
+                    # 'Real' label means human-written (real text)
+                    elif label == 'Real':
                         human_prob = score * 100
         
         # Ensure probabilities sum to 100%
@@ -215,7 +216,7 @@ def main():
     Simply paste your text below and click **Analyze Text** to see the results.
     """)
     
-    st.info(f"**Model**: {MODEL_NAME} (trained to detect ChatGPT-generated text)")
+    st.info(f"**Model**: {MODEL_NAME} (trained to detect AI-generated text)")
     
     # Load model
     try:

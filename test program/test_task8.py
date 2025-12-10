@@ -49,7 +49,7 @@ def test_model_caching_behavior():
     start_time = time.time()
     classifier1 = pipeline(
         task="text-classification",
-        model="Hello-SimpleAI/chatgpt-detector-roberta",
+        model="openai-community/roberta-base-openai-detector",
         device=-1
     )
     first_load_time = time.time() - start_time
@@ -103,7 +103,7 @@ def test_memory_usage():
     print("\nLoading model...")
     classifier = pipeline(
         task="text-classification",
-        model="Hello-SimpleAI/chatgpt-detector-roberta",
+        model="openai-community/roberta-base-openai-detector",
         device=-1
     )
     

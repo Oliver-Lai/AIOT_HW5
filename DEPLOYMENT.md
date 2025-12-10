@@ -124,7 +124,7 @@ Python 依賴列表，Streamlit Cloud 會自動安裝。
 
 你會看到類似的輸出：
 ```
-📥 Downloading model: Hello-SimpleAI/chatgpt-detector-roberta
+📥 Downloading model: openai-community/roberta-base-openai-detector
 ⏳ This may take a few minutes...
 Device set to use cpu
 ✅ Model loaded successfully!
