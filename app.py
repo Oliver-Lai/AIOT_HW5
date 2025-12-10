@@ -228,22 +228,19 @@ def main():
     st.markdown("---")
     st.subheader("📝 Enter Text to Analyze")
     
-    # Initialize session state for text input if not exists
-    if 'text_input' not in st.session_state:
-        st.session_state.text_input = ""
+    # Initialize session state for clear counter
+    if 'clear_counter' not in st.session_state:
+        st.session_state.clear_counter = 0
     
+    # Text area with dynamic key that changes when cleared
     text_input = st.text_area(
         label="Paste your text here:",
-        value=st.session_state.text_input,
         height=200,
         max_chars=MAX_CHAR_LIMIT,
         placeholder="Paste the text you want to analyze here. The detector works best with at least a few sentences.",
         help=f"Maximum {MAX_CHAR_LIMIT} characters. Best results with 50+ words.",
-        key="text_area_input"
+        key=f"text_area_{st.session_state.clear_counter}"
     )
-    
-    # Update session state with current input
-    st.session_state.text_input = text_input
     
     # Character count
     char_count = len(text_input)
@@ -256,9 +253,9 @@ def main():
     with col2:
         clear_button = st.button("🗑️ Clear", use_container_width=True)
     
-    # Handle clear button click
+    # Handle clear button click - increment counter to force text_area recreation
     if clear_button:
-        st.session_state.text_input = ""
+        st.session_state.clear_counter += 1
         st.rerun()
     
     # Analysis and Results
