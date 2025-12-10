@@ -228,20 +228,38 @@ def main():
     st.markdown("---")
     st.subheader("📝 Enter Text to Analyze")
     
+    # Initialize session state for text input if not exists
+    if 'text_input' not in st.session_state:
+        st.session_state.text_input = ""
+    
     text_input = st.text_area(
         label="Paste your text here:",
+        value=st.session_state.text_input,
         height=200,
         max_chars=MAX_CHAR_LIMIT,
         placeholder="Paste the text you want to analyze here. The detector works best with at least a few sentences.",
-        help=f"Maximum {MAX_CHAR_LIMIT} characters. Best results with 50+ words."
+        help=f"Maximum {MAX_CHAR_LIMIT} characters. Best results with 50+ words.",
+        key="text_area_input"
     )
+    
+    # Update session state with current input
+    st.session_state.text_input = text_input
     
     # Character count
     char_count = len(text_input)
     st.caption(f"Characters: {char_count}/{MAX_CHAR_LIMIT}")
     
-    # Analyze button
-    analyze_button = st.button("🔍 Analyze Text", type="primary", use_container_width=True)
+    # Button row with Analyze and Clear buttons
+    col1, col2 = st.columns([3, 1])
+    with col1:
+        analyze_button = st.button("🔍 Analyze Text", type="primary", use_container_width=True)
+    with col2:
+        clear_button = st.button("🗑️ Clear", use_container_width=True)
+    
+    # Handle clear button click
+    if clear_button:
+        st.session_state.text_input = ""
+        st.rerun()
     
     # Analysis and Results
     if analyze_button:
