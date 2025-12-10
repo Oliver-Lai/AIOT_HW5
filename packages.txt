@@ -1,2 +1,1 @@
-# System packages required for the application
-# Streamlit Cloud will install these before installing Python packages
+
