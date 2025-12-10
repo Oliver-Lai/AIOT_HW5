@@ -13,14 +13,26 @@ from transformers import pipeline, AutoTokenizer, AutoModelForSequenceClassifica
 from typing import Dict, Any
 import os
 
+# ============================================================================
 # Configuration Constants
-AI_THRESHOLD = 0.70        # 70% for "AI Generated"
-HUMAN_THRESHOLD = 0.70     # 70% for "Human Written"
-MAX_CHAR_LIMIT = 5000      # Maximum input length
-MODEL_NAME = "Hello-SimpleAI/chatgpt-detector-roberta"
-TASK = "text-classification"
-DEVICE = -1  # CPU (0 for GPU if available)
-MODEL_CACHE_DIR = "./model_cache"  # Local cache directory
+# ============================================================================
+# These constants control the application's behavior and classification logic
+
+# Classification thresholds (0.0 to 1.0 scale, displayed as percentage)
+AI_THRESHOLD = 0.70        # If AI probability > 70%, classify as "AI Generated"
+HUMAN_THRESHOLD = 0.70     # If Human probability > 70%, classify as "Human Written"
+                           # If neither exceeds threshold, classify as "Mixed/Uncertain"
+
+# Input constraints
+MAX_CHAR_LIMIT = 5000      # Maximum characters accepted from user input
+                           # Prevents excessive memory usage and processing time
+
+# Model configuration
+MODEL_NAME = "Hello-SimpleAI/chatgpt-detector-roberta"  # HuggingFace model identifier
+TASK = "text-classification"                             # Pipeline task type
+DEVICE = -1                                              # -1 for CPU, 0+ for GPU device ID
+MODEL_CACHE_DIR = "./model_cache"                       # Local directory for model caching
+                                                          # Reduces download time on subsequent runs
 
 
 @st.cache_resource
@@ -32,32 +44,49 @@ def load_model():
     and cached for subsequent requests, which is critical for Streamlit Cloud
     memory management. Models are cached locally to avoid repeated downloads.
     
+    The @st.cache_resource decorator ensures:
+    - Model is loaded only once per session
+    - Shared across all users and reruns
+    - Persists until app restart or cache clear
+    - Memory-efficient for production deployment
+    
     Returns:
-        pipeline: Hugging Face pipeline object for text classification
+        pipeline: Hugging Face pipeline object for text classification.
+                 Returns a callable pipeline that accepts text and returns predictions.
         
     Raises:
-        Exception: If model loading fails due to network or compatibility issues
+        Exception: If model loading fails due to network issues, incompatible
+                  dependencies, insufficient disk space, or invalid model name.
+                  
+    Note:
+        First run downloads ~500MB model. Subsequent runs use cached version.
+        Model files are stored in MODEL_CACHE_DIR to avoid re-downloading.
     """
     try:
         # Create cache directory if it doesn't exist
+        # This ensures the model has a persistent storage location
         os.makedirs(MODEL_CACHE_DIR, exist_ok=True)
         
         # Set the Hugging Face cache directory via environment variable
+        # This tells transformers library where to store downloaded models
         os.environ['TRANSFORMERS_CACHE'] = MODEL_CACHE_DIR
         
         # Load model and tokenizer with local caching
+        # The pipeline abstracts away tokenization and inference details
         classifier = pipeline(
-            task=TASK,
-            model=MODEL_NAME,
-            device=DEVICE
+            task=TASK,           # Type of task: text-classification
+            model=MODEL_NAME,    # Pre-trained model from HuggingFace
+            device=DEVICE        # CPU (-1) or GPU (0+) device
         )
         return classifier
     except Exception as e:
+        # Display user-friendly error message in the UI
         st.error(f"Failed to load model: {str(e)}")
         st.info("Troubleshooting tips:\n"
                 "- Check your internet connection\n"
                 "- Verify the model name is correct\n"
                 "- Ensure all dependencies are installed")
+        # Re-raise exception to halt execution
         raise
 
 
@@ -116,22 +145,27 @@ def analyze_text(text: str, classifier) -> Dict[str, Any]:
         elif human_prob == 0.0 and ai_prob > 0.0:
             human_prob = 100 - ai_prob
         
-        # Determine classification
+        # Determine classification based on threshold comparison
+        # Uses simple rule-based logic: if either probability exceeds threshold,
+        # classify accordingly; otherwise mark as uncertain/mixed
         if ai_prob > (AI_THRESHOLD * 100):
             classification = "AI Generated"
         elif human_prob > (HUMAN_THRESHOLD * 100):
             classification = "Human Written"
         else:
+            # Neither probability exceeds threshold - model is uncertain
             classification = "Mixed/Uncertain"
         
-        # Determine confidence level
+        # Determine confidence level based on maximum probability
+        # Higher max probability = more confident prediction
+        # This is independent of the classification result
         max_prob = max(ai_prob, human_prob)
         if max_prob > 85:
-            confidence_level = "High"
+            confidence_level = "High"      # Very confident (>85%)
         elif max_prob >= 70:
-            confidence_level = "Medium"
+            confidence_level = "Medium"    # Moderately confident (70-85%)
         else:
-            confidence_level = "Low"
+            confidence_level = "Low"       # Low confidence (<70%)
         
         return {
             'ai_probability': ai_prob,
@@ -148,12 +182,30 @@ def analyze_text(text: str, classifier) -> Dict[str, Any]:
 def main():
     """
     Main application function that sets up the Streamlit UI and handles user interactions.
+    
+    This function orchestrates the entire application flow:
+    1. Configure page settings (title, icon, layout)
+    2. Display header and model information
+    3. Load and cache the ML model
+    4. Create input interface for text entry
+    5. Handle analysis button click
+    6. Validate user input
+    7. Perform text analysis
+    8. Display results with visualizations
+    9. Provide interpretation guidance
+    
+    The function uses Streamlit's reactive programming model where the entire
+    script reruns on each user interaction. State is preserved using caching.
+    
+    Returns:
+        None: This function manages the UI and doesn't return a value.
     """
-    # Page configuration
+    # Page configuration - must be the first Streamlit command
+    # Sets browser tab title, favicon, and page width
     st.set_page_config(
-        page_title="AI Content Detector",
-        page_icon="🔍",
-        layout="centered"
+        page_title="AI Content Detector",  # Browser tab title
+        page_icon="🔍",                     # Browser tab icon
+        layout="centered"                   # Content width: centered or wide
     )
     
     # Header Section

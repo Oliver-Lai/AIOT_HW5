@@ -1,3 +1,10 @@
-streamlit>=1.28.0,<2.0.0
-transformers>=4.30.0,<5.0.0
-torch>=2.0.0,<3.0.0
+# Core Web Application Framework
+streamlit>=1.28.0,<2.0.0     # Streamlit web app framework
+
+# Machine Learning Libraries
+transformers>=4.30.0,<5.0.0  # Hugging Face Transformers for model loading
+torch>=2.0.0,<3.0.0          # PyTorch backend for model inference (CPU-only)
+
+# Optional: Uncomment for additional features
+# pillow>=10.0.0             # For image handling if needed
+# plotly>=5.0.0              # For advanced visualizations

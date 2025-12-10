@@ -241,6 +241,46 @@ Streamlit Cloud 會在首次部署時自動下載並緩存模型。
 - Subsequent analyses should be faster (1-5 seconds)
 - Very long texts (>1000 words) may take longer to process
 
+### Empty Input Error
+
+**Problem**: "Text cannot be empty" warning
+
+**Solutions**:
+- Ensure you've entered text in the text area before clicking "Analyze Text"
+- Text must be at least 1 character long
+
+### Character Limit Exceeded
+
+**Problem**: Text is too long
+
+**Solutions**:
+- Maximum input is 5,000 characters
+- Model processes up to 2,000 characters for analysis
+- Split longer texts into multiple analyses if needed
+
+### Installation Issues
+
+**Problem**: Dependency conflicts during installation
+
+**Solutions**:
+```bash
+# Create a fresh virtual environment
+python -m venv venv_new
+source venv_new/bin/activate  # or venv_new\Scripts\activate on Windows
+pip install --upgrade pip
+pip install -r requirements.txt
+```
+
+### Streamlit Cloud Deployment Issues
+
+**Problem**: App fails to deploy on Streamlit Cloud
+
+**Solutions**:
+- Ensure `requirements.txt` is in the root directory
+- Verify Python version compatibility (3.8+)
+- Check Streamlit Cloud logs for specific errors
+- Wait for model download (first deployment takes 5-10 minutes)
+
 ## Dependencies
 
 - `streamlit>=1.28.0,<2.0.0` - Web application framework
